@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в аккаунт</title>
+</head>
+<body>
+    <h1>Вход в аккаунт</h1>
+        <form method="post" action="{% url 'enter' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Войти</button>
+        </form>
+        <a href="http://127.0.0.1:8000/internet_shop/registrate/">Регистрация</a>
+
+</body>
+</html>

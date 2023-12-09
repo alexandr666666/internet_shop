@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Подтверждение</title>
+</head>
+<body>
+    <form action="{% url 'product_list' %}" method="post">
+      {% csrf_token %}
+      <label for="confirmation_code">Введите код подтверждения:</label>
+      <input type="text" id="confirmation_code" name="confirmation_code">
+      <button type="submit">Отправить</button>
+    </form>
+  {% endif %}
+</body>
+</html>
