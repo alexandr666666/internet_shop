@@ -4,12 +4,12 @@
   <title>Форма ввода email</title>
 </head>
 <body>
-  <h2>Введите ваш email адрес и код подтверждения</h2>
+  <h2>Введите ваш email адрес</h2>
   <form action="{% url 'enter_email' %}" method="post">
     {% csrf_token %}
     <label for="email">Email:</label><br>
     <input type="email" id="email" name="email"><br><br>
-    <input type="submit" value="Отправить">
+    <input type="submit" onclick="http://127.0.0.1:8000/internet_shop/enter_code" value="Отправить">
   </form>
 </body>
 </html>

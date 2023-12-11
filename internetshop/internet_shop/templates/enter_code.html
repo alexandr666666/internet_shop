@@ -4,12 +4,11 @@
   <title>Подтверждение</title>
 </head>
 <body>
-    <form action="{% url 'product_list' %}" method="post">
+    <h1>Введите ваш код, отправленный вам на почту</h1>
+    <form method="post" action="{% url 'enter_code' %}">
       {% csrf_token %}
-      <label for="confirmation_code">Введите код подтверждения:</label>
-      <input type="text" id="confirmation_code" name="confirmation_code">
-      <button type="submit">Отправить</button>
+      {{ form.as_p }}
+      <button type="submit">Проверить код</button>
     </form>
-  {% endif %}
 </body>
 </html>

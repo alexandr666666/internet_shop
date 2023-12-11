@@ -8,5 +8,5 @@ urlpatterns = [
     path('not_succes/', views.not_succes, name='not_succes'),
     path('registrate/', views.register, name='register'),
     path('send-confirmation/', views.send_and_verify_code, name='enter_email'),
-    path('check-code/', views.check_confirmation_code, name='enter_code'),
+    path('enter_code/', views.check_confirmation_code, name='enter_code'),
 ]

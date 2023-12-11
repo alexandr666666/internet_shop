@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db import models
-import random
+
 class Product(models.Model):
     brand = models.CharField(max_length=100)
     title = models.CharField("Название продукта", max_length=255)
