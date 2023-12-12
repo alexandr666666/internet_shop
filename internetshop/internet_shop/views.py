@@ -7,7 +7,7 @@ import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
-def product_list(request):
+def product_list(request): #функция для отображения списка продуктов
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
 
@@ -32,10 +32,10 @@ def enter(request):
         form = Autorisation()
     return render(request, 'Enter.html', {'form': form})
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
+def register(request): #Пишем функцию для регистрации пользователя
+    if request.method == 'POST': #Проверяем, отправились ли данные с методом пост
+        form = UserRegistrationForm(request.POST) #Если так, то передаем в представление форму
+        if form.is_valid(): #Проверка данных на валидность
             form.save()
             return render(request, 'for_register.html')
     else:
@@ -62,22 +62,25 @@ def send_and_verify_code(request):
         user_email = request.POST.get('email')  # Получаем адрес электронной почты из формы
         random_code = generate_random_code()  # Генерируем случайный код
         send_random_code_email(user_email, random_code)  # Отправляем код на почту
-        request.session['confirmation_code'] = random_code #сохраняем рандомный код в сессии
+        request.session['confirmation_code'] = random_code # Сохраняем рандомный код в сессии
         return redirect('enter_code')
     else:
         return render(request, 'enter_email.html')
+
+def not_right_code(request):
+    return render(request, 'if_not_right_code.html')
 
 def check_confirmation_code(request):
     if request.method == 'POST':
         form = Check_code(request.POST)
         if form.is_valid():
-            entered_code = form.cleaned_data['entered_code']
-            sent_code = request.session.get('confirmation_code')
+            entered_code = form.cleaned_data['entered_code'] #получаем данные из формы
+            sent_code = request.session.get('confirmation_code') #получаем данные из сессии
             form.save()
             if entered_code == sent_code:
-                return redirect('product_list')
+                return redirect('product_list') #если код верный, то перекидываем пользователя на главную страницу
             else:
-                return HttpResponse('Code is not right!!!')
+                return redirect('not_right_code') #в ином случае на страницу, где говорится, что код неверный
     else:
         form = Check_code()
     return render(request, 'enter_code.html', {'form': form})
