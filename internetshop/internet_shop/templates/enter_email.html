@@ -4,7 +4,8 @@
   <title>Форма ввода email</title>
 </head>
 <body>
-  <h2>Введите ваш email адрес</h2>
+  <h1>Введите ваш email адрес</h1>
+  <h2>Введите ваш адрес электронной почты, и мы отправим вам код подтвержления</h2>
   <form action="{% url 'enter_email' %}" method="post">
     {% csrf_token %}
     <label for="email">Email:</label><br>

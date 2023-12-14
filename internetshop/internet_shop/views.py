@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
 from .models import Product
-from django.http import *
 from .forms import Autorisation, UserRegistrationForm, Check_code
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
+
 def product_list(request): #функция для отображения списка продуктов
     products = Product.objects.all()
     return render(request, 'product_list.html', {'products': products})
@@ -32,12 +33,12 @@ def enter(request):
         form = Autorisation()
     return render(request, 'Enter.html', {'form': form})
 
-def register(request): #Пишем функцию для регистрации пользователя
-    if request.method == 'POST': #Проверяем, отправились ли данные с методом пост
-        form = UserRegistrationForm(request.POST) #Если так, то передаем в представление форму
-        if form.is_valid(): #Проверка данных на валидность
+def register(request):
+    if request.method == 'POST':
+        form = UserRegistrationForm(request.POST)
+        if form.is_valid():
             form.save()
-            return render(request, 'for_register.html')
+            return redirect('enter_email')
     else:
         form = UserRegistrationForm()
     return render(request, 'for_register.html', {'form': form})
@@ -54,7 +55,7 @@ def send_random_code_email(user_email, code):
         f'Ваш код для проверки: {code}', #Текст сообщения
         settings.EMAIL_HOST_USER,  # Адрес отправителя, который определен в настройках Django
         [user_email],  # Электронная почта пользователя
-        fail_silently=True,
+        fail_silently=False,
     )
 
 def send_and_verify_code(request):
@@ -70,6 +71,9 @@ def send_and_verify_code(request):
 def not_right_code(request):
     return render(request, 'if_not_right_code.html')
 
+def right_code(request):
+    pass
+
 def check_confirmation_code(request):
     if request.method == 'POST':
         form = Check_code(request.POST)
@@ -77,13 +81,15 @@ def check_confirmation_code(request):
             entered_code = form.cleaned_data['entered_code'] #получаем данные из формы
             sent_code = request.session.get('confirmation_code') #получаем данные из сессии
             form.save()
-            if entered_code == sent_code:
-                return redirect('product_list') #если код верный, то перекидываем пользователя на главную страницу
+            if entered_code == sent_code: #проверяем, правильно ли введен код, отправленный на почту пользователю
+                return redirect('right_code') #если код верный, то перекидываем пользователя на соответствующую страницу
             else:
                 return redirect('not_right_code') #в ином случае на страницу, где говорится, что код неверный
     else:
         form = Check_code()
     return render(request, 'enter_code.html', {'form': form})
+
+
 
 
 
