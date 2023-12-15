@@ -38,7 +38,7 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            request.session['username'] = form.cleaned_data['username']
+            request.session['username'] = form.cleaned_data['username'] #сохраняем данные в сессию
             request.session['email'] = form.cleaned_data['email']
             request.session['password'] = form.cleaned_data['password']
             return redirect('enter_email')
@@ -76,14 +76,18 @@ def not_right_code(request):
 
 def right_code(request):
     if request.method == 'POST':
-        username = request.session.get('username')
+        username = request.session.get('username') #получаем данные из сессии
         email = request.session.get('email')
         password = request.session.get('password')
-        user = User(username=username, email=email, password=password)
+        user = User(username=username, email=email, password=password) #сохранием данные, введенные в форму
         user.save()
-        return redirect('product_list')
+        return redirect('user_cabinet')
     else:
         return render(request, 'if_code_right.html')
+
+def user_cabinet(request):
+    user = User.objects.all()
+    return render(request, 'Личный кабинет пользователя.html', {'user': user})
 
 def check_confirmation_code(request):
     if request.method == 'POST':

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <h1>Ваш личный кабинет</h1><br><br>
+    {% for data_user in user %}
+        <p>Ваше имя пользователя: {{data_user.username}}</p><br>
+        <p>Ваша электронная почта: {{data_user.email}}</p><br>
+        {% endfor %}
+</body>
+</html>
