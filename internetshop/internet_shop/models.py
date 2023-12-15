@@ -15,4 +15,4 @@ class Account(models.Model):
     password = models.CharField(max_length=100)
 
 class Enter_code(models.Model):
-    entered_code = models.CharField(max_length=6)
+    entered_code = models.CharField('Код подтверждения: ', max_length=6)

@@ -7,6 +7,7 @@ import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
+from django.http import HttpResponse
 
 def product_list(request): #функция для отображения списка продуктов
     products = Product.objects.all()
@@ -37,7 +38,9 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            request.session['username'] = form.cleaned_data['username']
+            request.session['email'] = form.cleaned_data['email']
+            request.session['password'] = form.cleaned_data['password']
             return redirect('enter_email')
     else:
         form = UserRegistrationForm()
@@ -72,7 +75,15 @@ def not_right_code(request):
     return render(request, 'if_not_right_code.html')
 
 def right_code(request):
-    pass
+    if request.method == 'POST':
+        username = request.session.get('username')
+        email = request.session.get('email')
+        password = request.session.get('password')
+        user = User(username=username, email=email, password=password)
+        user.save()
+        return redirect('product_list')
+    else:
+        return render(request, 'if_code_right.html')
 
 def check_confirmation_code(request):
     if request.method == 'POST':
