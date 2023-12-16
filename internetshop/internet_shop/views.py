@@ -86,7 +86,7 @@ def right_code(request):
         return render(request, 'if_code_right.html')
 
 def user_cabinet(request):
-    user = User.objects.all()
+    user = User.objects.get()
     return render(request, 'Личный кабинет пользователя.html', {'user': user})
 
 def check_confirmation_code(request):
