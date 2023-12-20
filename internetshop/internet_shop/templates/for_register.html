@@ -8,7 +8,9 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Далее</button>
+        <strong><p>Перед тем, как продожить регистрацию, согласитесь с </p><a href="{% url 'agree_with_rules' %}">нашими правилами!</a></strong><br>
+        <input type="checkbox" id="myCheckbox" name="myCheckbox"><br>
+        <input type="submit" value="Продолжить регистрацию"><br>
     </form>
 </body>
 </html>

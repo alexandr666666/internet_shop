@@ -1,13 +1,11 @@
 from django.shortcuts import render, redirect
 from .models import Product
-from .forms import Autorisation, UserRegistrationForm, Check_code
-from django.contrib.auth import authenticate
+from .forms import Autorisation, UserRegistrationForm, Check_code, Card_number
 from django.contrib.auth.models import User
 import random
 import string
 from django.core.mail import send_mail
 from django.conf import settings
-from django.http import HttpResponse
 
 def product_list(request): #функция для отображения списка продуктов
     products = Product.objects.all()
@@ -20,16 +18,15 @@ def enter(request):
     if request.method == 'POST':
         form = Autorisation(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username'] #получаем данные из формы
+            username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            user = authenticate(username=username, email=email, password=password)
-            if user is not None:
-                # Пароль верный, пользователь существует
-                return redirect('product_list')
+            if User.objects.filter(username=username, email=email, password=password).exists():
+                request.session['_username_'] = username
+                request.session['_email_'] = email
+                return redirect('user_cabinet_enter') #Пользователь существует, пароль верный
             else:
-                # Пользователь не существует или пароль неверный
-                return render(request, 'not_succes.html')
+                return redirect('not_succes') #Пользователь не существует или неверный пароль
     else:
         form = Autorisation()
     return render(request, 'Enter.html', {'form': form})
@@ -37,14 +34,18 @@ def enter(request):
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            request.session['username'] = form.cleaned_data['username'] #сохраняем данные в сессию
-            request.session['email'] = form.cleaned_data['email']
-            request.session['password'] = form.cleaned_data['password']
-            return redirect('enter_email')
+        if form.is_valid() and 'myCheckbox' in request.POST: #проверяем, присутствует ли myCheckbox в данных формы, доступных через request.POST
+            if request.POST['myCheckbox'] == 'on': #Проверяем, нажата ли галочка
+                request.session['username'] = form.cleaned_data['username'] #сохраняем в сессию данные, полученные из формы
+                request.session['email'] = form.cleaned_data['email']
+                request.session['password'] = form.cleaned_data['password']
+                return redirect('enter_email')
     else:
         form = UserRegistrationForm()
     return render(request, 'for_register.html', {'form': form})
+
+def agree_with_rules(request): #функция для отображения правил, если пользователю интересны наши правила
+    return render(request, 'Правила.html')
 
 def generate_random_code():
     code_length = 6  # длина кода
@@ -81,12 +82,16 @@ def right_code(request):
         password = request.session.get('password')
         user = User(username=username, email=email, password=password) #сохранием данные, введенные в форму
         user.save()
-        return redirect('user_cabinet')
+        request.session['username_for_show'] = username
+        request.session['email_for_show'] = email
+        return redirect('user_cabinet_register')
     else:
         return render(request, 'if_code_right.html')
 
-def user_cabinet(request):
-    user = User.objects.get()
+def user_cabinet_register(request):
+    username = request.session.get('username_for_show')
+    email = request.session.get('email_for_show')
+    user = User.objects.get(username=username, email=email)
     return render(request, 'Личный кабинет пользователя.html', {'user': user})
 
 def check_confirmation_code(request):
@@ -95,7 +100,6 @@ def check_confirmation_code(request):
         if form.is_valid():
             entered_code = form.cleaned_data['entered_code'] #получаем данные из формы
             sent_code = request.session.get('confirmation_code') #получаем данные из сессии
-            form.save()
             if entered_code == sent_code: #проверяем, правильно ли введен код, отправленный на почту пользователю
                 return redirect('right_code') #если код верный, то перекидываем пользователя на соответствующую страницу
             else:
@@ -104,14 +108,21 @@ def check_confirmation_code(request):
         form = Check_code()
     return render(request, 'enter_code.html', {'form': form})
 
+def print_products(request):
+    return render(request, 'Shop.html')
 
+def user_cabinet_enter(request):
+    username = request.session.get('_username_')
+    email = request.session.get('_email_')
+    user = User.objects.get(username=username, email=email)
+    return render(request, 'Личный кабинет пользователя при входе на сервер.html', {'user': user})
 
-
-
-
-
-
-
-
-
-
+def card_number(request):
+    if request.method == 'POST':
+        form = Card_number(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('user_cabinet_enter')
+    else:
+        form = Card_number()
+    return render(request, 'Добавление карты.html', {'form': form})

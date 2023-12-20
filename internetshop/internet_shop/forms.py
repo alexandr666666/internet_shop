@@ -1,5 +1,5 @@
 from django import forms
-from .models import Account, Enter_code
+from .models import Account, Enter_code, Card_Number
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 class Autorisation(forms.ModelForm):
@@ -17,4 +17,7 @@ class Check_code(forms.ModelForm):
         model = Enter_code
         fields = ['entered_code']
 
-
+class Card_number(forms.ModelForm):
+    class Meta:
+        model = Card_Number
+        fields = ['card_number']

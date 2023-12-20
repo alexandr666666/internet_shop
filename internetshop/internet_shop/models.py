@@ -1,4 +1,3 @@
-
 from django.utils import timezone
 from django.db import models
 
@@ -16,3 +15,6 @@ class Account(models.Model):
 
 class Enter_code(models.Model):
     entered_code = models.CharField('Код подтверждения ', max_length=6)
+
+class Card_Number(models.Model):
+    card_number = models.CharField(max_length=19)
