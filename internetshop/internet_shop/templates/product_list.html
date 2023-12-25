@@ -11,7 +11,7 @@
             <li>{{ product.title }} - {{ product.price }}$</li>
         {% endfor %}
     </ul>
-    <a href="http://127.0.0.1:8000/internet_shop/user_cabinet">Ваш личный кабинет</a><br><br>
+    <a href="{% url 'user_cabinet_enter' %}">Ваш личный кабинет</a><br><br>
     <a href="http://127.0.0.1:8000/internet_shop/shop">Перейти на главную</a><br>
 </body>
 </html>

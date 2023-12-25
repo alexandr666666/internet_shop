@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Product
-from .forms import Autorisation, UserRegistrationForm, Check_code, Card_number
+from .forms import Autorisation, UserRegistrationForm, Check_code, New_password
 from django.contrib.auth.models import User
 import random
 import string
@@ -80,7 +80,7 @@ def right_code(request):
         username = request.session.get('username') #получаем данные из сессии
         email = request.session.get('email')
         password = request.session.get('password')
-        user = User(username=username, email=email, password=password) #сохранием данные, введенные в форму
+        user = User(username=username, email=email, password=password) #сохранием данные, введенные в форму ранее
         user.save()
         request.session['username_for_show'] = username
         request.session['email_for_show'] = email
@@ -117,12 +117,24 @@ def user_cabinet_enter(request):
     user = User.objects.get(username=username, email=email)
     return render(request, 'Личный кабинет пользователя при входе на сервер.html', {'user': user})
 
-def card_number(request):
+def create_new_password(request): #пишем функцию, которая создает новый пароль
     if request.method == 'POST':
-        form = Card_number(request.POST)
+        form = New_password(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('user_cabinet_enter')
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            new_password = form.cleaned_data['enter_new_password']
+            user = User.objects.get(username=username, email=email)
+            user.password = new_password
+            user.save()
+            return redirect('password_created')
     else:
-        form = Card_number()
-    return render(request, 'Добавление карты.html', {'form': form})
+        form = New_password()
+    return render(request, 'Восстановление пароля.html', {'form': form})
+
+def password_created(request): # сообщаем пользователю о том, что пароль изменен
+    return render(request, 'Пароль успешно изменен.html')
+
+def show_products_for_buy(request):
+    product_data = Product.objects.all()
+    return render(request, 'Shop.html', {'product_data': product_data})

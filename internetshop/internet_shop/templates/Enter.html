@@ -10,8 +10,9 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Войти</button>
+            <br>
         </form>
-        <a href="http://127.0.0.1:8000/internet_shop/registrate/">Регистрация</a>
-
+        <a href="{% url 'register' %}">Регистрация</a><br>
+        <a href="{% url 'create_new_password' %}">Забыли пароль?</a>
 </body>
 </html>
